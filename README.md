@@ -15,3 +15,12 @@ Welcome to the **Dinosaurs Game**, a thrilling and adventurous game where player
 - **Multiplayer mode**: Compete with friends in exciting multiplayer matches and see who survives the longest.
 
 
+## Controls
+Movement: Arrow keys or WASD
+Jump: Spacebar
+Special Ability: Shift key (depends on the dinosaur)
+Attack: Ctrl key
+Pause/Unpause: P key
+Game Modes
+Single Player: Play through the campaign mode, complete missions, and explore the world of dinosaurs.
+Multiplayer: Join lobbies and compete with other players in survival mode or team-based challenges.
