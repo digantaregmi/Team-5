@@ -1,0 +1,5 @@
+INSERT INTO movie (title, platform, mood, genre, movie_url)
+VALUES ('Inception', 'Netflix', 'Happy', 'Sci-Fi', 'https://netflix.com/inception');
+
+INSERT INTO movie (title, platform, mood, genre, movie_url)
+VALUES ('The Pursuit of Happiness', 'Prime', 'Sad', 'Drama', 'https://prime.com/pursuit-of-happyness');
