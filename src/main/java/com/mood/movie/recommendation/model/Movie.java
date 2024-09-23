@@ -36,4 +36,6 @@ public class Movie {
 
     public String getMovieUrl() { return movieUrl; }
     public void setMovieUrl(String movieUrl) { this.movieUrl = movieUrl; }
+
+    public void setId(){};
 }
