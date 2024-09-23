@@ -38,4 +38,5 @@ public class Movie {
     public void setMovieUrl(String movieUrl) { this.movieUrl = movieUrl; }
 
     public void setId(){};
+    public int getNameId(){return 1;}
 }
