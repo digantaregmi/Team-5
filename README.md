@@ -13,12 +13,4 @@ Our mood-based movie recommendation system is designed to help users find the pe
 - **Multiple Filters**: Allow users to combine multiple filters like genre, year, or rating to get more refined results
 - **Drop Down Menu**: A button for movies, button for TV series, most popular movies, new releases, lists, help center
 
-## Controls
-Movement: Arrow keys or WASD
-Jump: Spacebar
-Special Ability: Shift key (depends on the dinosaur)
-Attack: Ctrl key
-Pause/Unpause: P key
-Game Modes
-Single Player: Play through the campaign mode, complete missions, and explore the world of dinosaurs.
-Multiplayer: Join lobbies and compete with other players in survival mode or team-based challenges.
+
