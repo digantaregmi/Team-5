@@ -1,4 +1,4 @@
-package com.mood.movie.recommendation.model;
+package com.mood.movie.recommendation;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
