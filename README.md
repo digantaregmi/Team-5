@@ -9,7 +9,6 @@ Our mood-based movie recommendation system is designed to help users find the pe
 ## Features
 
 - **Recommendations**: The website will already have suggestions of movies prior to the user entering any information
-- **User Accounts**: Allow users to create accounts to save preferences or favorite movies
 - **Multiple Filters**: Allow users to combine multiple filters like genre, year, or rating to get more refined results
 - **Drop Down Menu**: A button for movies, button for TV series, most popular movies, new releases, lists, help center
 
