@@ -1,0 +1,123 @@
+/* General Body Styling */
+body {
+    background-color: #4f4f4f;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: white;
+    overflow: hidden;
+}
+
+/* Header Section */
+header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: #333;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.logo h1 {
+    color: #fff;
+    font-size: 2.8rem;
+    margin: 0;
+    letter-spacing: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+    text-transform: uppercase;
+}
+
+/* Main Heading */
+h1 {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 3rem;
+    margin-top: 2%;
+    text-align: center;
+    color: #e0e0e0;
+    text-transform: uppercase;
+}
+
+/* Dropdown Menu */
+.menu-icon {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.menu-icon .bar {
+    width: 30px;
+    height: 3px;
+    background-color: #e5f2f0;
+    margin: 5px 0;
+}
+
+.dropdown {
+    position: fixed;
+    top: 120px;
+    left: 10px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #121010;
+    border-radius: 6px;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3);
+    padding: 12px;
+    transition: opacity 0.3s ease;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+    opacity: 1;
+}
+
+/* List Container */
+.list-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+}
+
+/* Styled List */
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Individual List Item Styling */
+li {
+    font-size: 2.5rem;
+    padding: 20px;
+    font-family: 'Verdana', Geneva, Tahoma, sans-serif;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+/* Link Styling inside List Items */
+li a {
+    text-decoration: none;
+    color: #141212f7;
+    font-size: 1.8rem;
+}
+
+li a:hover {
+    color: #ff6347;
+    font-weight: bold;
+    font-size: 1.2em;
+    text-decoration: underline;
+    transition: all 0.3s ease;
+}

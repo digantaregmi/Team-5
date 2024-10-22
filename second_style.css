@@ -1,0 +1,133 @@
+body {
+    background-color: #4f4f4f;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* align-items: center; */
+    color: white;
+    overflow: hidden;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: #333;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.logo h1 {
+    color: #fff;
+    font-size: 2.8rem;
+    margin: 0;
+    letter-spacing: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, sans-serif;
+}
+
+h1 {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 3rem;
+    margin-top: 1%;
+    text-align: center;
+    color: #e0e0e0;
+    text-transform: uppercase;
+}
+
+/* Dropdown Menu */
+.menu-icon {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.menu-icon .bar {
+    width: 30px;
+    height: 3px;
+    background-color: #e5f2f0;
+    margin: 5px 0;
+}
+
+.dropdown {
+    position: fixed;
+    top: 120px;
+    left: 10px;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #121010;
+    border-radius: 6px;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3);
+    padding: 12px;
+    /* z-index: 1; */
+    transition: opacity 0.3s ease;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+    opacity: 1;
+}
+
+/*
+* FOR THE LIST!!
+*/
+.list-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 3px;
+}
+
+/* Style the list */
+ul {
+    display: grid;
+    grid-template-columns: repeat(4, 120px);
+    /* 3 columns, each 100px wide */
+    grid-template-rows: repeat(2, 70px);
+    /* 2 rows, each 50px tall */
+    gap: 30px;
+    /* Add space between grid items */
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
+/* Style individual list items */
+li {
+    font-size: 2.5rem;
+    padding: 30px;
+    background-color: #333;
+    color: #f0f0f0;
+    border-radius: 10px;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+li:hover {
+    background-color: #555;
+    transform: scale(1.05);
+}
+
+/* Remove the link line under the emojis */
+li a {
+    text-decoration: none;
+    color: inherit;
+    font-family: 'Verdana', Geneva, Tahoma, sans-serif;
+    font-size: 2.0rem;
+    transition: color 0.3s ease;
+}
+
+li a:hover {
+    font-weight: bold;
+    font-size: 1.6em;
+    transition: all 0.3s ease-in-out;
+}
