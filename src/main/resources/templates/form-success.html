@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title>Moody Movie</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #B8B8B8;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            background-color: #333;
+            padding: 10px 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        nav a, nav input {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .moody-movie {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #9932CC;
+            font-size: 24px;
+            font-weight: bold;
+            font-family: 'Arial', sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 42px;
+            margin-top: 60px;
+            margin-bottom: 80px;
+        }
+
+        .recommendation {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .movie-poster {
+            position: relative;
+            width: 300px;
+        }
+
+        .movie-poster img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .movie-details {
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .movie-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .movie-overview {
+            font-size: 18px;
+            color: #555;
+        }
+
+        .button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .button-red {
+            background-color: #FF4444;
+            color: white;
+        }
+
+        .button-green {
+            background-color: #44FF44;
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+
+        /* Sticky navigation bar */
+nav {
+    position: sticky;
+    top: 0;
+    background-color: #333;
+    padding: 10px 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: flex-start; /* Align items to the left */
+}
+
+nav a, nav form {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 18px;
+}
+
+nav a:hover, nav form:hover {
+    text-decoration: underline;
+}
+
+nav form {
+    display: inline;
+}
+
+.nav-link {
+    display: inline-block;
+}
+
+.unset {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 18px;
+}
+    </style>
+</head>
+<body th:data-user-id="${#authentication.principal.id}">
+<nav>
+    <a th:href="@{/}" class="nav-link">Home</a>
+    <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="nav-link">Login</a>
+    <a sec:authorize="!isAuthenticated()" th:href="@{/signup}" class="nav-link">Signup</a>
+    <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="nav-link">
+        <input th:value="Logout" type="submit" class="unset"/>
+    </form>
+</nav>
+
+<div class="container">
+    <div class="moody-movie">Moody Movie</div>
+
+    <h1>WE RECOMMEND</h1>
+
+    <div id="movieContainer" th:if="${moviePage != null}" data-current-page="0">
+        <div th:each="movie : ${moviePage.content}" class="recommendation" data-id="${movie.movieId}">
+            <div class="movie-poster">
+                <img th:src="'https://image.tmdb.org/t/p/w500/' + ${movie.posterLink}" alt="Movie Poster"/>
+            </div>
+            <div class="movie-details">
+                <div class="movie-title" th:text="${movie.movieTitle}"></div>
+                <div class="movie-overview" th:text="${movie.movieOverview}"></div>
+            </div>
+            <div class="action-buttons">
+                <button class="button button-red" onclick="loadNextMovie('${movie.movieId}')">✗</button>
+                <button class="button button-green" onclick="showCongratsMessage()">✓</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="congratsMessage" class="message">
+        Congratulations! Redirecting to home page...
+    </div>
+
+    <div id="noMoviesMessage" class="message">
+        No more movies to display. Redirecting to mood selection...
+    </div>
+</div>
+
+<script>
+    function loadNextMovie(movieId) {
+        const userId = document.body.getAttribute('data-user-id');
+        const movieContainer = document.getElementById('movieContainer');
+        const currentPage = parseInt(movieContainer.getAttribute('data-current-page') || '1');
+        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        // Send dislike data
+        fetch('/form/dislike-movie', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                [csrfHeader]: csrfToken
+            },
+            body: JSON.stringify({ movieId: movieId, userId: userId })
+        })
+        .catch(error => console.error('Error sending dislike data:', error));
+
+        // Fetch next movie
+        fetch(`/form/get-movie?page=${currentPage + 1}&size=1`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.content && data.content.length > 0) {
+                    const movie = data.content[0];
+                    movieContainer.setAttribute('data-current-page', data.page.number);
+                    movieContainer.innerHTML = `
+                        <div class="recommendation" data-id="${movie.movieId}">
+                            <div class="movie-poster">
+                                <img src="https://image.tmdb.org/t/p/w500/${movie.posterLink}" alt="Movie Poster" />
+                            </div>
+                            <div class="movie-details">
+                                <div class="movie-title">${movie.movieTitle}</div>
+                                <div class="movie-overview">${movie.movieOverview}</div>
+                            </div>
+                            <div class="action-buttons">
+                                <button class="button button-red" onclick="loadNextMovie('${movie.movieId}')">✗</button>
+                                <button class="button button-green" onclick="showCongratsMessage()">✓</button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    showNoMoviesMessage();
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching movie:', error);
+                showNoMoviesMessage();
+            });
+    }
+
+    function showCongratsMessage() {
+        document.getElementById("congratsMessage").style.display = "block";
+        setTimeout(function() {
+            window.location.href = "/form/page/1";
+        }, 2000);
+    }
+
+    function showNoMoviesMessage() {
+        document.getElementById("noMoviesMessage").style.display = "block";
+        setTimeout(function() {
+            window.location.href = "/form/page/1";
+        }, 2000);
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <title>What Mood Are You In?</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #B8B8B8;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        .moody-movie {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #9932CC;
+            font-size: 24px;
+            font-weight: bold;
+            font-family: 'Arial', sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 42px;
+            margin-top: 60px;
+            margin-bottom: 80px;
+        }
+
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .emoji-button {
+            background: none;
+            border: 3px solid transparent;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 48px;
+            padding: 10px;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .emoji-button:hover {
+            transform: scale(1.1);
+        }
+
+        .emoji-button.selected {
+            border-color: #9932CC;
+            background-color: rgba(153, 50, 204, 0.1);
+        }
+
+        .hidden-form {
+            display: none;
+        }
+
+        /* Tooltip style */
+        .emoji-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip {
+            visibility: hidden;
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 5px 10px;
+            border-radius: 6px;
+            position: absolute;
+            z-index: 1;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .emoji-container:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Sticky navigation bar */
+        nav {
+            position: sticky;
+            top: 0;
+            background-color: #333;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        nav a, nav form {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 18px;
+        }
+
+        nav a:hover, nav form:hover {
+            text-decoration: underline;
+        }
+
+        nav form {
+            display: inline;
+        }
+
+        .nav-link {
+            display: inline-block;
+        }
+
+        .unset {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+<!--nav logout-->
+<nav>
+<!--    <a th:href="@{/}" class="nav-link">Home</a>-->
+    <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="nav-link">Login</a>
+    <a sec:authorize="!isAuthenticated()" th:href="@{/signup}" class="nav-link">Signup</a>
+    <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="nav-link">
+        <input th:value="Logout" type="submit" class="unset"/>
+    </form>
+</nav>
+
+<div class="container">
+    <div class="moody-movie">Moody Movie</div>
+
+    <h1>WHAT MOOD ARE YOU IN?</h1>
+
+    <form id="moodForm" th:action="@{/form/page/1}" th:object="${userRequest}" method="post" class="hidden-form">
+        <input type="text" id="inputMood" th:field="*{inputMood}"/>
+    </form>
+
+    <div class="emoji-grid">
+        <div class="emoji-container">
+            <button class="emoji-button" onclick="selectMood('GRINNING_FACE')" title="Happy">😀</button>
+            <span class="tooltip">General happiness</span>
+        </div>
+        <div class="emoji-container">
+            <button class="emoji-button" onclick="selectMood('SLIGHTLY_SMILING_FACE')" title="Content">🙂</button>
+            <span class="tooltip">Mild happiness</span>
+        </div>
+        <div class="emoji-container">
+            <button class="emoji-button" onclick="selectMood('WINKING_FACE_WITH_TONGUE')" title="Playful">😜</button>
+            <span class="tooltip">Playfulness</span>
+        </div>
+        <div class="emoji-container">
+            <button class="emoji-button" onclick="selectMood('CRYING_FACE')" title="Sad">😢</button>
+            <span class="tooltip">Sadness</span>
+        </div>
+        <div class="emoji-container">
+            <button class="emoji-button" onclick="selectMood('UNAMUSED_FACE')" title="Unamused">😒</button>
+            <span class="tooltip">Displeasure</span>
+        </div>
+        <div class="emoji-container">
+            <button class="emoji-button" onclick="selectMood('YAWNING_FACE')" title="Bored">🥱</button>
+            <span class="tooltip">Boredom</span>
+        </div>
+        <div class="emoji-container">
+            <button class="emoji-button" onclick="selectMood('POUTING_FACE')" title="Angry">😡</button>
+            <span class="tooltip">Anger</span>
+        </div>
+        <div class="emoji-container">
+            <button class="emoji-button" onclick="selectMood('SMILING_FACE_WITH_HEART_EYES')" title="Love">😍</button>
+            <span class="tooltip">Love</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    let selectedButton = null;
+
+    function selectMood(mood) {
+        // Remove selection from previous button
+        if (selectedButton) {
+            selectedButton.classList.remove('selected');
+        }
+
+        // Get the clicked button
+        const clickedButton = event.currentTarget;
+        clickedButton.classList.add('selected');
+        selectedButton = clickedButton;
+
+        // Set the mood value and submit the form
+        document.getElementById('inputMood').value = mood;
+        setTimeout(() => {
+            document.getElementById('moodForm').submit();
+        }, 300);
+    }
+</script>
+</body>
+</html>

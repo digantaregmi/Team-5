@@ -1,0 +1,28 @@
+<!--&lt;!&ndash; src/main/resources/templates/fragments/forms.html &ndash;&gt;-->
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <title>Form Fragments</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--&lt;!&ndash; Global Errors Fragment &ndash;&gt;-->
+<!--<div th:fragment="globalErrors(authentication)">-->
+<!--    <div th:if="${#fields.hasGlobalErrors()}">-->
+<!--        <div th:each="err : ${#fields.globalErrors()}" class="alert alert-danger">-->
+<!--            <p th:text="${err}"></p>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; Input Row Fragment &ndash;&gt;-->
+<!--<div th:fragment="inputRow(object, field, type='text')">-->
+<!--    <div class="form-group">-->
+<!--        <label th:for="${field}" th:text="#{${field}}"></label>-->
+<!--        <input th:type="${type}" th:field="*{${field}}" class="form-control" th:classappend="${#fields.hasErrors(${field})} ? 'is-invalid' : ''"/>-->
+<!--        <div th:if="${#fields.hasErrors(${field})}" class="invalid-feedback">-->
+<!--            <p th:each="err : ${#fields.errors(${field})}" th:text="${err}"></p>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+<!--</body>-->
+<!--</html>-->

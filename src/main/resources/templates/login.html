@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>[[#{authentication.login.headline}]]</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #F0F0F0;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 42px;
+            margin-top: 60px;
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btn-primary {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        /* Sticky navigation bar */
+        nav {
+            position: sticky;
+            top: 0;
+            background-color: #333;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        nav a, nav form {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 18px;
+        }
+
+        nav a:hover, nav form:hover {
+            text-decoration: underline;
+        }
+
+        nav form {
+            display: inline;
+        }
+
+        .nav-link {
+            display: inline-block;
+        }
+
+        .unset {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body layout:decorate="~{layout}">
+<!-- Navigation Bar -->
+<nav>
+    <a th:href="@{/}" class="nav-link">Home</a>
+    <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="nav-link">Login</a>
+    <a sec:authorize="!isAuthenticated()" th:href="@{/signup}" class="nav-link">Signup</a>
+    <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="nav-link">
+        <input th:value="Logout" type="submit" class="unset"/>
+    </form>
+</nav>
+
+<div class="container">
+    <h1 class="mb-4">[[#{authentication.login.headline}]]</h1>
+    <form th:action="@{/login}" th:object="${authentication}" method="post">
+        <div class="form-group">
+            <label for="email">[[#{authentication.email.label}]]</label>
+            <input type="text" id="email" th:field="*{email}" class="form-control"/>
+        </div>
+        <div class="form-group">
+            <label for="password">[[#{authentication.password.label}]]</label>
+            <input type="password" id="password" th:field="*{password}" class="form-control"/>
+        </div>
+        <input type="submit" th:value="#{authentication.login.headline}" class="btn btn-primary mt-4"/>
+    </form>
+</div>
+</body>
+</html>

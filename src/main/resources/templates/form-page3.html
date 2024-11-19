@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <title>How Much Time Do You Have?</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #B8B8B8;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        .moody-movie {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #9932CC;
+            font-size: 24px;
+            font-weight: bold;
+            font-family: 'Arial', sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 42px;
+            margin-top: 60px;
+            margin-bottom: 80px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .time-button {
+            background-color: transparent;
+            border: 2px solid #333;
+            color: #333;
+            font-size: 24px;
+            font-weight: bold;
+            padding: 15px 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .time-button:hover {
+            background-color: #9932CC;
+            color: white;
+            border-color: #9932CC;
+        }
+
+        .time-button.selected {
+            background-color: #9932CC;
+            color: white;
+            border-color: #9932CC;
+        }
+
+        /* Sticky navigation bar */
+        nav {
+            position: sticky;
+            top: 0;
+            background-color: #333;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        nav a, nav form {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 18px;
+        }
+
+        nav a:hover, nav form:hover {
+            text-decoration: underline;
+        }
+
+        nav form {
+            display: inline;
+        }
+
+        .nav-link {
+            display: inline-block;
+        }
+
+        .unset {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation Bar -->
+<nav>
+<!--    <a th:href="@{/}" class="nav-link">Home</a>-->
+    <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="nav-link">Login</a>
+    <a sec:authorize="!isAuthenticated()" th:href="@{/signup}" class="nav-link">Signup</a>
+    <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="nav-link">
+        <input th:value="Logout" type="submit" class="unset"/>
+    </form>
+</nav>
+
+<div class="container">
+    <div class="moody-movie">Moody Movie</div>
+
+    <h1>HOW MUCH TIME DO YOU HAVE?</h1>
+
+    <form id="moodForm" th:action="@{/form/page/3}" th:object="${userRequest}" method="post" class="hidden-form">
+        <input type="hidden" id="maxWatchTime" th:field="*{maxWatchTime}"/>
+
+        <div class="button-group">
+            <button type="button" class="time-button" onclick="selectTime(119)">Less than 2 hours</button>
+            <button type="button" class="time-button" onclick="selectTime(179)">Between 2 - 3 hours</button>
+            <button type="button" class="time-button" onclick="selectTime(181)">3+ hours</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    let selectedButton = null;
+
+    function selectTime(time) {
+        // Deselect the previously selected button
+        if (selectedButton) {
+            selectedButton.classList.remove('selected');
+        }
+
+        // Get the button that triggered the function
+        selectedButton = event.currentTarget;
+        selectedButton.classList.add('selected');
+
+        // Set the selected time in the hidden input and submit the form
+        document.getElementById('maxWatchTime').value = time;
+        document.getElementById('moodForm').submit();
+    }
+</script>
+</body>
+</html>

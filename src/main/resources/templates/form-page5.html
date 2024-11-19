@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Choose Your Streaming Services</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #B8B8B8;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        .moody-movie {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #9932CC;
+            font-size: 24px;
+            font-weight: bold;
+            font-family: 'Arial', sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 42px;
+            margin-top: 60px;
+            margin-bottom: 80px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .platform-button {
+            background-color: transparent;
+            border: 2px solid #333;
+            color: #333;
+            font-size: 16px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 120px;
+            height: 120px;
+            position: relative;
+        }
+
+        .platform-button img {
+            max-width: 80px;
+            max-height: 80px;
+            height: auto;
+            width: auto;
+        }
+
+        .platform-button:hover,
+        .platform-button.selected {
+            background-color: #9932CC;
+            color: white;
+            border-color: #9932CC;
+        }
+
+        .platform-button:hover::after {
+            content: attr(data-name);
+            position: absolute;
+            bottom: -25px;
+            background-color: #333;
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .submit-button {
+            margin-top: 40px;
+            padding: 10px 20px;
+            font-size: 18px;
+            color: white;
+            background-color: #9932CC;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .submit-button:hover {
+            background-color: #7a29a0;
+        }
+
+        /* Sticky navigation bar */
+        nav {
+            position: sticky;
+            top: 0;
+            background-color: #333;
+            padding: 10px 0;
+            z-index: 1000;
+        }
+
+        nav a, nav form {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 18px;
+        }
+
+        nav a:hover, nav form:hover {
+            text-decoration: underline;
+        }
+
+        nav form {
+            display: inline;
+        }
+
+        .nav-link {
+            display: inline-block;
+        }
+
+        .unset {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+<!-- Navigation Bar -->
+<nav>
+    <a th:href="@{/}" class="nav-link">Home</a>
+    <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="nav-link">Login</a>
+    <a sec:authorize="!isAuthenticated()" th:href="@{/signup}" class="nav-link">Signup</a>
+    <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="nav-link">
+        <input th:value="Logout" type="submit" class="unset"/>
+    </form>
+</nav>
+
+<div class="container">
+    <div class="moody-movie">Moody Movie</div>
+
+    <h1>CHOOSE YOUR STREAMING SERVICES</h1>
+
+    <form id="platformForm" th:action="@{/form/page/5}" th:object="${userRequest}" method="post" class="hidden-form">
+        <input type="hidden" id="streamingPlatforms" th:field="*{streamingPlatforms}"/>
+
+        <div class="button-group">
+            <div class="platform-button" onclick="togglePlatform('Netflix')" data-name="Netflix">
+                <img th:src="@{/images/netflix-logo.png}" alt="Netflix">
+            </div>
+            <div class="platform-button" onclick="togglePlatform('Amazon Prime Video')" data-name="Amazon Prime Video">
+                <img th:src="@{/images/amzn-prime.png}" alt="Amazon Prime Video">
+            </div>
+            <div class="platform-button" onclick="togglePlatform('Apple TV')" data-name="Apple TV">
+                <img th:src="@{/images/apple-tv-logo.png}" alt="Apple TV">
+            </div>
+            <div class="platform-button" onclick="togglePlatform('Max')" data-name="Max">
+                <img th:src="@{/images/max-logo.png}" alt="Max">
+            </div>
+            <div class="platform-button" onclick="togglePlatform('Google Play Movies')" data-name="Google Play Movies">
+                <img th:src="@{/images/google-play-movies-logo.jpg}" alt="Google Play Movies">
+            </div>
+            <div class="platform-button" onclick="togglePlatform('YouTube')" data-name="YouTube">
+                <img th:src="@{/images/youtube-logo.png}" alt="YouTube">
+            </div>
+            <div class="platform-button" onclick="togglePlatform('Rakuten TV')" data-name="Rakuten TV">
+                <img th:src="@{/images/rakuten-tv-logo.png}" alt="Rakuten TV">
+            </div>
+            <div class="platform-button" onclick="togglePlatform('Cineplex')" data-name="Cineplex">
+                <img th:src="@{/images/cineplex-logo.png}" alt="Cineplex">
+            </div>
+        </div>
+
+        <button type="submit" class="submit-button">Submit</button>
+    </form>
+</div>
+
+<script>
+    let selectedPlatforms = [];
+
+    function togglePlatform(platform) {
+        const button = event.currentTarget;
+
+        if (selectedPlatforms.includes(platform)) {
+            // Remove platform from selection
+            selectedPlatforms = selectedPlatforms.filter(p => p !== platform);
+            button.classList.remove('selected');
+        } else {
+            // Add platform to selection
+            selectedPlatforms.push(platform);
+            button.classList.add('selected');
+        }
+
+        // Update hidden input with selected platforms
+        document.getElementById('streamingPlatforms').value = selectedPlatforms.join(',');
+    }
+</script>
+</body>
+</html>
+
