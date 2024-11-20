@@ -1,9 +1,10 @@
 package com.example.moodymovie.service;
-
 import com.example.moodymovie.adaptor.MovieDbAdaptor;
 import com.example.moodymovie.adaptor.response.DiscoverMovieResponse;
 import com.example.moodymovie.controller.request.UserRequest;
 import com.example.moodymovie.controller.response.SingleMovieResponse;
+import com.example.moodymovie.dto.MovieWatchProvidersDTO;
+import com.example.moodymovie.dto.StreamingPlatformAndLinkDTO;
 import com.example.moodymovie.entities.Movie;
 import com.example.moodymovie.repository.MoodToGenreMappingRepository;
 import com.example.moodymovie.repository.MovieRepository;
@@ -14,9 +15,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -47,12 +48,6 @@ public class MovieService {
             var res = discoverMovieResponse.getMovieDtoList().stream()
                     .filter(movie -> userRequest.getAge() >= 18 || !movie.isAdult()) // filter out adult movies
                     .filter(movie -> movieDbAdaptor.getWatchTime(movie.getMovieId()) <= userRequest.getMaxWatchTime()) // filter based on watch time
-                    .filter(movie -> {
-                        List<String> moviePlatforms = movieDbAdaptor.getStreamingPlatforms(movie.getMovieId());
-                        return userRequest.getStreamingPlatforms().stream()
-                                .anyMatch(userPlatform -> moviePlatforms.stream()
-                                        .anyMatch(mp -> mp.equalsIgnoreCase(userPlatform)));
-                    }) // filter based on streaming platform
                     .map(movieDTO -> {
                         // Create a new Movie entity
                         Movie movie = new Movie();
@@ -72,14 +67,32 @@ public class MovieService {
                         movie.setVoteCount(movieDTO.getVoteCount());
 
                         // Set the additional fields
-                        List<String> moviePlatforms = movieDbAdaptor.getStreamingPlatforms(movieDTO.getMovieId());
-                        movie.setStreamingPlatforms(String.join(",", moviePlatforms));
-                        movie.setLength(movieDbAdaptor.getWatchTime(movieDTO.getMovieId()));
+                        Optional<StreamingPlatformAndLinkDTO> streamingPlatformAndLinkDTOptional = movieDbAdaptor.getStreamingPlatforms(movieDTO.getMovieId());
+                        List<MovieWatchProvidersDTO.Provider> streamingProviders = null;
+                        List<String> moviePlatforms = new ArrayList<>();
+                        if (streamingPlatformAndLinkDTOptional.isPresent()) {
+                            var streamingPlatformAndLinkDTO = streamingPlatformAndLinkDTOptional.get();
+                            if (streamingPlatformAndLinkDTO.getProviders().isPresent()) {
+                                streamingProviders = streamingPlatformAndLinkDTO.getProviders().get();
+                                if (!CollectionUtils.isEmpty(streamingProviders)) {
+                                    moviePlatforms = streamingProviders.stream()
+                                            .map(MovieWatchProvidersDTO.Provider::getProviderName)
+                                            .toList();
+                                    movie.setStreamingPlatforms(String.join(",", moviePlatforms));
+                                    movie.setLength(movieDbAdaptor.getWatchTime(movieDTO.getMovieId()));
+                                    movie.setLink(streamingPlatformAndLinkDTO.getLink());
+                                }
+                            }
+                        }
 
-                        return movie;
+                        return new AbstractMap.SimpleEntry<>(movie, moviePlatforms);
                     })
+                    .filter(entry -> userRequest.getStreamingPlatforms().stream()
+                            .anyMatch(userPlatform -> entry.getValue().stream()
+                                    .anyMatch(mp -> mp.equalsIgnoreCase(userPlatform))))
+                    .map(Map.Entry::getKey)
                     .toList();
-            System.out.println("Hello");
+//            System.out.println("Hello");
             //TODO need to delete all rows before saving new one
             // treating this as cache. Will implement other solutions later on if required.
             movieRepository.deleteAll();
@@ -98,7 +111,8 @@ public class MovieService {
                         movie.getPosterPath(),
                         String.valueOf(movie.getId()),
                         movie.getTitle(),
-                        movie.getOverview()
+                        movie.getOverview(),
+                        movie.getLink()
                 ))
                 .toList();
         return new PageImpl<>(singleMovieResponses, pageable, moviePage.getTotalElements());

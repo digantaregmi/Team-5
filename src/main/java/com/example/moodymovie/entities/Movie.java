@@ -61,4 +61,7 @@ public class Movie {
 
     @Column(name = "length")
     private double length;
+
+    @Column(name = "link")
+    private String link;
 }

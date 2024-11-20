@@ -12,4 +12,5 @@ public class SingleMovieResponse {
     private String movieId;
     private String movieTitle;
     private String movieOverview;
+    private String link;
 }

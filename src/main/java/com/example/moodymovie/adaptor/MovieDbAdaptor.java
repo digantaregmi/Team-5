@@ -3,20 +3,21 @@ package com.example.moodymovie.adaptor;
 import com.example.moodymovie.adaptor.response.DiscoverMovieResponse;
 import com.example.moodymovie.dto.MovieDetailsDTO;
 import com.example.moodymovie.dto.MovieWatchProvidersDTO;
+import com.example.moodymovie.dto.StreamingPlatformAndLinkDTO;
 import com.example.moodymovie.utils.CommonUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -28,8 +29,6 @@ public class MovieDbAdaptor {
     private String apiVersion;
     @Value("${movie.db.api.key}")
     private String apiKey;
-//    @Value("${movie.db.bearer.token}")
-//    private String token;
 
     // discover -> movie
     public DiscoverMovieResponse getMovieListByGenres(List<String> genres, long page) {
@@ -88,7 +87,8 @@ public class MovieDbAdaptor {
         return 0;
     }
 
-    public List<String> getStreamingPlatforms(long movieId) {
+    public Optional<StreamingPlatformAndLinkDTO> getStreamingPlatforms(long movieId) {
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
             HttpResponse<String> response;
             try (HttpClient httpClient = HttpClient.newHttpClient()) {
@@ -108,23 +108,26 @@ public class MovieDbAdaptor {
 //                MovieWatchProvidersDTO movieWatchProvidersDTO = objectMapper.readValue(response.body(), MovieWatchProvidersDTO.class);
 //                return movieWatchProvidersDTO.getResults().get("US").getBuy().stream()
 //                        .map(MovieWatchProvidersDTO.Provider::getProviderName).toList();
-            if (!ObjectUtils.isEmpty(response.body())) {
-                ObjectMapper objectMapper = new ObjectMapper();
-                MovieWatchProvidersDTO movieWatchProvidersDTO = objectMapper.readValue(response.body(), MovieWatchProvidersDTO.class);
-                return Optional.ofNullable(movieWatchProvidersDTO.getResults().get("US"))
+            MovieWatchProvidersDTO movieWatchProvidersDTO = objectMapper.readValue(response.body(), MovieWatchProvidersDTO.class);
+
+            if (!ObjectUtils.isEmpty(response.body()) && !CollectionUtils.isEmpty(movieWatchProvidersDTO.getResults())) {
+                var respWithLink = Optional.ofNullable(movieWatchProvidersDTO.getResults().get("US"));
+                StreamingPlatformAndLinkDTO streamingPlatformAndLinkDTO = new StreamingPlatformAndLinkDTO();
+                return respWithLink
                         .map(countryWatchProviders -> {
                             List<MovieWatchProvidersDTO.Provider> providers = countryWatchProviders.getBuy();
                             if (providers == null || providers.isEmpty()) {
                                 providers = countryWatchProviders.getFlatrate();
                             }
-                            return providers;
+                            streamingPlatformAndLinkDTO.setLink(respWithLink.get().getLink());
+                            streamingPlatformAndLinkDTO.setProviders(Optional.of(providers));
+                            return Optional.of(streamingPlatformAndLinkDTO);
                         })
-                        .orElse(Collections.emptyList())
-                        .stream()
-                        .map(MovieWatchProvidersDTO.Provider::getProviderName)
-                        .toList();
+                        .orElse(Optional.empty());
+
             } else {
-                return Collections.emptyList();
+                log.error("Empty response from TMDB");
+                return Optional.empty();
             }
         } catch (Exception e) {
             log.error("getStreamingPlatforms() ERROR: {}", e.getMessage());
@@ -132,3 +135,4 @@ public class MovieDbAdaptor {
         }
     }
 }
+

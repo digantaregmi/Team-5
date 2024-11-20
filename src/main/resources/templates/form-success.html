@@ -141,45 +141,45 @@
         }
 
         /* Sticky navigation bar */
-nav {
-    position: sticky;
-    top: 0;
-    background-color: #333;
-    padding: 10px 0;
-    z-index: 1000;
-    display: flex;
-    justify-content: flex-start; /* Align items to the left */
-}
+        nav {
+            position: sticky;
+            top: 0;
+            background-color: #333;
+            padding: 10px 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: flex-start; /* Align items to the left */
+        }
 
-nav a, nav form {
-    color: white;
-    text-decoration: none;
-    margin: 0 15px;
-    font-size: 18px;
-}
+        nav a, nav form {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 18px;
+        }
 
-nav a:hover, nav form:hover {
-    text-decoration: underline;
-}
+        nav a:hover, nav form:hover {
+            text-decoration: underline;
+        }
 
-nav form {
-    display: inline;
-}
+        nav form {
+            display: inline;
+        }
 
-.nav-link {
-    display: inline-block;
-}
+        .nav-link {
+            display: inline-block;
+        }
 
-.unset {
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
-    font-size: 18px;
-}
+        .unset {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+        }
     </style>
 </head>
-<body th:data-user-id="${#authentication.principal.id}" th:background="@{/images/background.png}">
+<body th:data-user-id="${#authentication.principal.id}">
 <nav>
     <a th:href="@{/}" class="nav-link">Home</a>
     <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="nav-link">Login</a>
@@ -205,7 +205,7 @@ nav form {
             </div>
             <div class="action-buttons">
                 <button class="button button-red" onclick="loadNextMovie('${movie.movieId}')">✗</button>
-                <button class="button button-green" onclick="showCongratsMessage()">✓</button>
+                <button class="button button-green" onclick="showCongratsMessage('${movie.link}')">✓</button>
             </div>
         </div>
     </div>
@@ -236,7 +236,7 @@ nav form {
             },
             body: JSON.stringify({ movieId: movieId, userId: userId })
         })
-        .catch(error => console.error('Error sending dislike data:', error));
+            .catch(error => console.error('Error sending dislike data:', error));
 
         // Fetch next movie
         fetch(`/form/get-movie?page=${currentPage + 1}&size=1`)
@@ -256,7 +256,7 @@ nav form {
                             </div>
                             <div class="action-buttons">
                                 <button class="button button-red" onclick="loadNextMovie('${movie.movieId}')">✗</button>
-                                <button class="button button-green" onclick="showCongratsMessage()">✓</button>
+                                <button class="button button-green" onclick="showCongratsMessage('${movie.link}')">✓</button>
                             </div>
                         </div>
                     `;
@@ -270,11 +270,14 @@ nav form {
             });
     }
 
-    function showCongratsMessage() {
-        document.getElementById("congratsMessage").style.display = "block";
-        setTimeout(function() {
-            window.location.href = "/form/page/1";
-        }, 2000);
+    function showCongratsMessage(link) {
+        <!--        document.getElementById("congratsMessage").style.display = "block";-->
+        <!--        setTimeout(function() {-->
+        <!--            window.location.href = "/form/page/1";-->
+        <!--        }, 2000);-->
+        <!--        window.location.href = link;-->
+        window.open(link, '_blank');
+
     }
 
     function showNoMoviesMessage() {
