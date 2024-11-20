@@ -9,6 +9,9 @@
             background-color: #B8B8B8;
             font-family: Arial, sans-serif;
             min-height: 100vh;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         .container {
@@ -139,7 +142,7 @@
         }
     </style>
 </head>
-<body>
+<body th:background="@{/images/background.png}">
 <!-- Navigation Bar -->
 <nav>
     <a th:href="@{/}" class="nav-link">Home</a>

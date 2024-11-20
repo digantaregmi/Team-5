@@ -13,6 +13,9 @@
             background-color: #B8B8B8;
             font-family: Arial, sans-serif;
             min-height: 100vh;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
 
         .container {
@@ -176,7 +179,7 @@ nav form {
 }
     </style>
 </head>
-<body th:data-user-id="${#authentication.principal.id}">
+<body th:data-user-id="${#authentication.principal.id}" th:background="@{/images/background.png}">
 <nav>
     <a th:href="@{/}" class="nav-link">Home</a>
     <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="nav-link">Login</a>
